@@ -25,9 +25,9 @@ public class Simulator {
                 
         ArrayList<String> bots = new ArrayList<>();
         
-       // bots.add("BullyBot");
-       // bots.add("DualBot");
-       // bots.add("ProspectorBot");
+        bots.add("BullyBot");
+        bots.add("DualBot");
+        bots.add("ProspectorBot");
         bots.add("RandomBot");
         bots.add("RageBot");
         
@@ -114,16 +114,18 @@ public class Simulator {
         
         String sufix;
         
-        //sufix = "*_+_0_+_0_1_0";        
+        //sufix = "-_1_4";        
         
         //sufix = "+_1_*_0_-_2_2"; //40%
         
         Double win=0.0;
         
-        while (win<90) {
-        sufix = gen.generate().toString();        
+        //while (win<90) {
+        sufix = gen.generate().toString();     
+        sufix = " *_2_-_1_-_-_4_-_1_0_0";   
+        sufix ="+_+_*_-_-_0_3_-_4_1_%_1_0_*_*_2_1_1_1";
         win = simulate(base+sufix+"\" "); //Space very important!
-        }
+        //}
        
     }
 }

@@ -26,6 +26,8 @@ public class GeneticWarrior {
 
     Generator gen;
     static BinaryTree tree;
+    static PrintWriter writer;
+    
     
     public int FindClosestAllyPlanet(PlanetWars pw, int planet) {
 
@@ -40,9 +42,9 @@ public class GeneticWarrior {
         Double curEval = -99990.0;        
         Double evaluation=0.0;
         
-        if (pw.NumFleets()>1) return;
+        if (pw.NumFleets()>5) return;
         
-        for (Planet enemyP: pw.NotMyPlanets()) {
+        for (Planet enemyP: pw.Planets()) {
           
            tree.map.parameters[0] =(double) enemyP.NumShips();
            tree.map.parameters[2] = (double) enemyP.GrowthRate();
@@ -58,13 +60,13 @@ public class GeneticWarrior {
                //if (curEval<=0)
                evaluation = Double.parseDouble(tree.traverse());                
                
-               PrintWriter writer;
-                try {
-                    writer = new PrintWriter(new FileOutputStream(new File("C:\\the-file-name.txt"),true));
-                         writer.println(tree.print());
-                         writer.println(evaluation);
-                          writer.close();                
-                } catch (Exception e) {}          
+//               PrintWriter writer;
+//                try {
+//                    writer = new PrintWriter(new FileOutputStream(new File("C:\\the-file-name.txt"),true));
+//                         writer.println(tree.print());
+//                         writer.println(evaluation);
+//                          writer.close();                
+//                } catch (Exception e) {}          
              
                // evaluation=5.0;
                 
@@ -82,7 +84,7 @@ public class GeneticWarrior {
                 
                 
         if (source != null && dest != null) {
-            int numShips = source.NumShips() / 2;
+            int numShips = source.NumShips()/2;
             pw.IssueOrder(source, dest, numShips);
         }        
 
@@ -105,6 +107,13 @@ public class GeneticWarrior {
 
     public static void main(String[] args) {
         
+        try {
+        writer = new PrintWriter(new FileOutputStream(new File("C:\\the-file-name.txt")));
+        } catch (Exception e) {}
+        
+        writer.println("STARTED WITH INPUT:"+args[0]);
+         writer.close();
+        
         Generator gen = new Generator();        
         ValueMap map = new ValueMap();        
         map.actions = new String[4];
@@ -116,9 +125,10 @@ public class GeneticWarrior {
         //map.parameters[0]=1.5;
         //map.parameters[1]=2.5;
         
-        gen.map = map;
-        
+        gen.map = map;                                     
+                
         tree = gen.loadFromString(args[0]);
+        
 //        tree = gen.generate();                       
         
         String line = "";
@@ -143,8 +153,10 @@ public class GeneticWarrior {
                         break;
                 }
             }
+           
         } catch (Exception e) {
             // Owned.
+            
         }
     }
 }

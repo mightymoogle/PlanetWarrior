@@ -4,6 +4,8 @@
  */
 package SimulatorTrees;
 
+import java.util.ArrayList;
+
 /**
  *
  * @author Mighty
@@ -16,6 +18,15 @@ public abstract class Node {
     public abstract String print();
     @Override
     public abstract String toString();
-        
+    
+    public abstract void toNodeArray(ArrayList<Node> arr);      
+    
+    public void setVaue(int value) {
+        this.value = value;
+    }
+    
+    public int getValue() {
+        return value;
+    }
     
     }

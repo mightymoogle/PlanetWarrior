@@ -23,9 +23,9 @@ public class Tournament extends Thread {
     public volatile int draws = 0;
     
         
-    public int MAP_START = 7; //Starting map
-    public int MAP_END = 8; //Last map
-    public int MAP_JUMPER = 1; //Allows to use only each Nth map
+    public static int MAP_START = 1; //Starting map
+    public static int MAP_END = 5; //Last map
+    public static int MAP_JUMPER = 1; //Allows to use only each Nth map
     
     public Tournament(String p, String b1, String b2) {
         path = p;
@@ -59,7 +59,7 @@ public class Tournament extends Thread {
                 String line = "";
 
                 while (line!=null && !line.contains("Wins") && !line.contains("Draw")) {                    
-//                    System.out.println("["+i+"%] "+line);
+                   // System.out.println("["+i+"%] "+line);
                     line = br.readLine();
                 }
                 

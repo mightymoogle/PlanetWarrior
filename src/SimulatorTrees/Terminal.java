@@ -4,6 +4,8 @@
  */
 package SimulatorTrees;
 
+import java.util.ArrayList;
+
 /**
  *
  * @author Mighty
@@ -27,6 +29,14 @@ public class Terminal extends Node {
     public String print() {
         return String.valueOf(map.parameters[value]);
     }
+
+    @Override
+    public void toNodeArray(ArrayList<Node> arr) {
+        
+        arr.add(this);
+        
+    }    
+    
     
     
 }
