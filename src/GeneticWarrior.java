@@ -41,8 +41,9 @@ public class GeneticWarrior {
         Planet dest=null;                        
         Double curEval = -99990.0;        
         Double evaluation=0.0;
+                
         
-        if (pw.NumFleets()>5) return;
+        //if (pw.NumFleets()>5) return;
         
         for (Planet enemyP: pw.Planets()) {
           

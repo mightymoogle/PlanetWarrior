@@ -7,6 +7,7 @@ package Simulator;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.Random;
 
 /**
  *
@@ -24,8 +25,11 @@ public class Tournament extends Thread {
     
         
     public static int MAP_START = 1; //Starting map
-    public static int MAP_END = 5; //Last map
+    public static int MAP_END = 2; //Last map
     public static int MAP_JUMPER = 1; //Allows to use only each Nth map
+    public static boolean RANDOM_MAPS = false; //WORKS???
+    
+    
     
     public Tournament(String p, String b1, String b2) {
         path = p;
@@ -37,13 +41,28 @@ public class Tournament extends Thread {
         for (int i = MAP_START; i <= MAP_END; i=i+MAP_JUMPER) {
 
             try {
-
+                int temp=i;
+                               
+                //If random maps is on, randomize the map
+                if (RANDOM_MAPS) {
+                    Random r = new Random();                    
+                    i=r.nextInt(100)+1;
+//                            MAP_END-MAP_START+1)
+//                            +MAP_START;
+                }
+                
+                
                 String fuckingIdiots = "java -jar " + path + "tools\\PlayGame.jar "
                         + path + "maps\\map" + i + ".txt"
                         + " 1000 1000 log.txt "
                         + "\"java -jar " + path + bot1
                         + "\"java -jar " + path + bot2;
 
+                //Now put back the i as it was if not randomized
+                if (RANDOM_MAPS) {
+                    i = temp;
+                }
+                
 
                 //System.out.println(fuckingIdiots);
                 Process process = Runtime.getRuntime().exec(fuckingIdiots);

@@ -18,13 +18,13 @@ import java.util.*;
 public class GeneticMadness {
 
     //Size of the population, larger the better, the slower
-    private static int populationSize = 3;
+    private static int populationSize = 20;
     //How many iterations to make, same as above...
     private static int numberOfIterations = 2;
     //Chance to have children, if no children, returns both parents
     private static double crossPropability = 1;
     //Chance that a mutation will happen
-    private static double mutationPropability = 2.01;
+    private static double mutationPropability = 0.10;
     //Chance that a complex mutation will hapen.
     //Regular = 1-P
     private static double complexMutationProbapiblity = 0.3;
@@ -34,6 +34,19 @@ public class GeneticMadness {
     private static Generator gen;
     //This holds the global maximum
     private static BinaryTree globalMaximum;
+    //IF false - checks vs other bots, if true, checks from population
+    private static boolean evaluateInSandBox = true;
+    //Play vs yourself in evaluation if sandboxed
+    private static boolean mirrorInSandbox = false;
+    //determines the selection type
+
+    private static enum selectionTypes {
+
+        ROULETE_WHEEL, TOURNAMENT
+    };
+    private static selectionTypes selectionType = selectionTypes.TOURNAMENT;
+    //Determines the size of the tournament
+    private static int tournamentSize = 3;
 
     private static void startUp() {
         gen = new Generator();
@@ -61,15 +74,18 @@ public class GeneticMadness {
             population.add(gen.generate());
         }
 
+        if (selectionType==selectionTypes.ROULETE_WHEEL) {     
+            //evaluate the whole populatioin if it's roulete wheel
+            evaluatePopulation(population);
+        }
         return population;
 
     }
-    
+
     //Load precalculated starting elements, generate missing ones
 //    private static ArrayList<BinaryTree> generateStartingPopulation(String[] precalculated) {
 //        //NOT IMPELMENTED
 //    }
-
     //Evaluates a single node, setting the maximum and it's evaluation parameter.
     //Also returns the evaluation
     public static double evaluate(BinaryTree t) {
@@ -80,6 +96,31 @@ public class GeneticMadness {
         }
 
         if (t.evaluation > globalMaximum.evaluation) {
+            globalMaximum = t;
+        }
+        return t.evaluation;
+    }
+
+    //Probably will change to the tournament selection
+    public static double evaluateSandboxed(BinaryTree t, ArrayList<BinaryTree> population) {
+
+        ArrayList<String> prefixes = new ArrayList<>();
+
+        for (BinaryTree c : population) {
+            prefixes.add(c.toString());
+        }
+        if (!mirrorInSandbox) {
+            prefixes.remove(t.toString());
+        }
+        t.evaluation = Simulator.simulateFromSuffix(t.toString(), prefixes);
+
+
+        if (globalMaximum == null) {
+            globalMaximum = t;
+        }
+
+        //>=, becouse newere one is more accurate, at least it should be
+        if (t.evaluation >= globalMaximum.evaluation) {
             globalMaximum = t;
         }
         return t.evaluation;
@@ -272,9 +313,44 @@ public class GeneticMadness {
         return newPopulation;
     }
 
+    public static BinaryTree tournamentSelection(ArrayList<BinaryTree> population, int size) {
+                
+        Random randnum = new Random();
+        ArrayList<BinaryTree> contestants = new ArrayList<>();
+
+        log("-----STARTED TOURNAMENT SELECTION------");
+        
+        if (size<=1) {
+             int rand = randnum.nextInt(population.size());             
+             log("-----TOURNAMENTSIZE TOO SMALL, RETURNED RANDOM------");
+             return population.get(rand);
+        }
+        
+
+        for (int i = 0; i < size; i++) {
+            int rand = randnum.nextInt(population.size());
+            contestants.add(population.get(rand));
+        }
+
+        BinaryTree winner = null;
+
+        for (BinaryTree t : contestants) {
+            t.evaluation = evaluateSandboxed(t, contestants);
+            if (winner == null) {
+                winner = t;
+            }
+            if (t.evaluation > winner.evaluation) {
+                winner = t;
+            }
+        }
+
+        log("-----Tournament winner " + winner.toString() + "-------");
+        return winner;
+    }
+
     //Get a random one from population, based on it's evaluation
     //Roulete wheel selection
-    public static BinaryTree gamble(ArrayList<BinaryTree> population) { //Mighty need a list
+    public static BinaryTree rouletteWheelSelection(ArrayList<BinaryTree> population) { //Mighty need a list
 
         Double sum = 0.0;
         for (BinaryTree t : population) {
@@ -301,19 +377,40 @@ public class GeneticMadness {
 
     //The evolution step
     public static ArrayList<BinaryTree> evolve(ArrayList<BinaryTree> population) {
+        //Start with null
+        ArrayList<BinaryTree> newPopulation=null;
+        
+        //Different algorithm depending on the type of selection
+        switch (selectionType) {
 
-        //New population from elites
-        ArrayList<BinaryTree> newPopulation = cloneElites(population);
+            case ROULETE_WHEEL:
+                //New population from elites
+                newPopulation = cloneElites(population);
 
-        //Make children, mutation inside crossStich
-        for (int i = numberOfElites - 1; i < populationSize / 2; i++) {
-            crossStich(gamble(population), gamble(population), newPopulation);
+                //Make children, mutation inside crossStich
+                for (int i = numberOfElites - 1; i < populationSize / 2; i++) {
+                    crossStich(rouletteWheelSelection(population), rouletteWheelSelection(population), newPopulation);
+                }
+
+                evaluatePopulation(newPopulation);
+
+                //Make the simulator grow if the percentage rises?
+                break;
+                
+            case TOURNAMENT:
+                
+                newPopulation = new ArrayList<>();
+                
+                for (int i = 0; i<populationSize/2; i++) {
+                    //Fight for survival!
+                    BinaryTree father = tournamentSelection(population, tournamentSize);
+                    BinaryTree mother = tournamentSelection(population, tournamentSize);                    
+                    //Add the children to newPopulation                    
+                    crossStich(father, mother,newPopulation);                    
+                }               
+                
         }
 
-
-        evaluatePopulation(newPopulation);
-
-        //Make the simulator grow if the percentage rises?
 
         return newPopulation;
     }
@@ -321,8 +418,22 @@ public class GeneticMadness {
     //Evaluates the whole population
     public static void evaluatePopulation(ArrayList<BinaryTree> population) {
         for (BinaryTree t : population) {
-            evaluate(t);
+            if (evaluateInSandBox) {
+                evaluateSandboxed(t, population);
+            } else {
+                evaluate(t);
+            }
         }
+    }
+    
+    
+    public static void printPopulation(ArrayList<BinaryTree> population, String text) {
+           log("*************"+text+"*************");
+            for (BinaryTree t : population) {
+                log(t.toString());
+            }
+            log("*************"+text+"*************");
+
     }
 
     public static void main(String[] args) {
@@ -331,18 +442,22 @@ public class GeneticMadness {
         startUp();
 
         //Generate the starting popuation, will need something else if need to resume
-        ArrayList<BinaryTree> population = generateStartingPopulation();         
-        //evaluate the whole populatioin
-        evaluatePopulation(population);
-
+        ArrayList<BinaryTree> population = generateStartingPopulation();
+        //Print out the starting population
+        printPopulation(population, "STARTING POPULATION");
+                
         //Evolve for the number of iterations
-        for (int i = 0; i < numberOfIterations; i++) {            
-            population = evolve(population);          
-            log("*************NEW POPULATION*************");
+        for (int i = 0; i < numberOfIterations; i++) {
+            population = evolve(population);
+            //print the text, +2 so that first iteration is the first
+            printPopulation(population, "POPULATION NR."+(i+1));
         }
 
-        //Output the global maximum
-        log("GLOBAL MAXIMUM: WINRATE=" + globalMaximum.evaluation + " CODE:" + globalMaximum.toString());
+        //Output the global maximum if we can
+        if (globalMaximum!=null) {
+            log("GLOBAL MAXIMUM: WINRATE=" + globalMaximum.evaluation + " CODE:" + globalMaximum.toString());
+        }
+        
 
     }
 }
