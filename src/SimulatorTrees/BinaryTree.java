@@ -49,6 +49,14 @@ public class BinaryTree extends Node implements Comparable<BinaryTree> {
             }
             return String.valueOf(lefty / righty);
         }
+        
+        if (move.equals("min")) {
+            return String.valueOf(Math.min(lefty, righty));
+        }
+        
+        if (move.equals("max")) {
+            return String.valueOf(Math.max(lefty, righty));
+        }
 
         return "ERROR";
 

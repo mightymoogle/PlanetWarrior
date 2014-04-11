@@ -28,35 +28,39 @@ public class GeneticMadness {
     //Chance that a complex mutation will hapen.
     //Regular = 1-P
     private static double complexMutationProbapiblity = 0.3;
-    //How many top trees we copy to the next population
-    private static int numberOfElites = 1; //size - elites must be pair, or one will be lost and probably crash???
     //The thing that generates everything
     private static Generator gen;
     //This holds the global maximum
     private static BinaryTree globalMaximum;
     //IF false - checks vs other bots, if true, checks from population
-    private static boolean evaluateInSandBox = true;
+    private static boolean evaluateInSandBox = false;
     //Play vs yourself in evaluation if sandboxed
     private static boolean mirrorInSandbox = false;
+    
     //determines the selection type
-
     private static enum selectionTypes {
 
         ROULETE_WHEEL, TOURNAMENT
     };
+    //The selection type
     private static selectionTypes selectionType = selectionTypes.TOURNAMENT;
+    //private static selectionTypes selectionType = selectionTypes.ROULETE_WHEEL;       
     //Determines the size of the tournament
     private static int tournamentSize = 3;
+    //How many top trees we copy to the next population
+    private static int numberOfElites = 1; //size - elites must be pair, or one will be lost and probably crash???
 
     private static void startUp() {
         gen = new Generator();
         ValueMap map = new ValueMap();
-        map.actions = new String[4];
+        map.actions = new String[6];
         map.actions[0] = "*";
         map.actions[1] = "+";
         map.actions[2] = "-";
         map.actions[3] = "%";
-        map.parameters = new Double[5];   //Mmm...
+        map.actions[4] = "min";
+        map.actions[5] = "max";
+        map.parameters = new Double[21];   //Mmm... The number to which we generate?
         gen.map = map;
     }
 
@@ -76,7 +80,7 @@ public class GeneticMadness {
 
         if (selectionType==selectionTypes.ROULETE_WHEEL) {     
             //evaluate the whole populatioin if it's roulete wheel
-            evaluatePopulation(population);
+            //evaluatePopulation(population);
         }
         return population;
 
@@ -384,15 +388,16 @@ public class GeneticMadness {
         switch (selectionType) {
 
             case ROULETE_WHEEL:
+                    
+                evaluatePopulation(population);
+                
                 //New population from elites
                 newPopulation = cloneElites(population);
 
                 //Make children, mutation inside crossStich
                 for (int i = numberOfElites - 1; i < populationSize / 2; i++) {
                     crossStich(rouletteWheelSelection(population), rouletteWheelSelection(population), newPopulation);
-                }
-
-                evaluatePopulation(newPopulation);
+                }                
 
                 //Make the simulator grow if the percentage rises?
                 break;

@@ -11,5 +11,5 @@ package SimulatorTrees;
 public class ValueMap {
     public Double[] parameters;   //Army X, Army Y, Growth X, Growth Y
     public String[] actions;
-     public int maxDepth=2;
+     public int maxDepth=3;
 }

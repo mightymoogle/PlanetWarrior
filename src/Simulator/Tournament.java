@@ -21,13 +21,12 @@ public class Tournament extends Thread {
     //Lazy, sorry for Public
     public volatile int wins = 0;
     public volatile int losses = 0;
-    public volatile int draws = 0;
-    
+    public volatile int draws = 0;    
         
     public static int MAP_START = 1; //Starting map
-    public static int MAP_END = 2; //Last map
+    public static int MAP_END = 1; //Last map
     public static int MAP_JUMPER = 1; //Allows to use only each Nth map
-    public static boolean RANDOM_MAPS = false; //WORKS???
+    public static boolean RANDOM_MAPS = true; //WORKS???
     
     
     
@@ -79,12 +78,15 @@ public class Tournament extends Thread {
 
                 while (line!=null && !line.contains("Wins") && !line.contains("Draw")) {                    
                    // System.out.println("["+i+"%] "+line);
+                   if (line.contains("timed")) System.out.println(line);
                     line = br.readLine();
                 }
                 
+                if (line==null) System.out.println("WARNING:"+"nothing outputed");
                 if (line.contains("Draw")) draws++;
                 if (line.contains("1 Wins")) wins++;
                 if (line.contains("2 Wins")) losses++;                
+                
           //      System.out.println("["+i+"%] "+line);
                 
                 process.destroy();            

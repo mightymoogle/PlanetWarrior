@@ -1,0 +1,2 @@
+set "PATH=%PATH%;C:\Program Files\Java\jdk1.7.0_04\bin"
+java -jar tools/PlayGame.jar maps/map2.txt 1000 1000 log.txt "java -jar h:/Source/JAVA/PlanetWarrior/dist/PlanetWarrior.jar +_9_max_12_*_*_max_9_*_20_10_-_max_5_16_-_20_11_10 " "java -jar example_bots/PlanetWarrior.jar -_7_*_20_0" | java -jar tools/ShowGame.jar
