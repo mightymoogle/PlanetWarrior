@@ -15,7 +15,7 @@ import java.util.*;
  */
 public class Simulator {
 
-    public static double simulate(String subject, ArrayList<String> bots) {
+    public static double simulate(String subject, ArrayList<String> bots,boolean output) {
          long startTime = System.currentTimeMillis();
         
         String path = "h:\\Source\\JAVA\\PlanetWarrior\\src\\";
@@ -33,7 +33,7 @@ public class Simulator {
 //        
         ArrayList<Tournament> threads = new ArrayList<>();
         
-        System.out.println("CONTESTANT: "+subject);
+        if (output) System.out.println("CONTESTANT: "+subject);
         //System.out.println();
         
         for (String bot: bots) {
@@ -60,7 +60,7 @@ public class Simulator {
         
         
         for (Tournament t: threads) {
-            System.out.println(String.format("%3d %3d %3d | %s ", t.wins, t.losses, t.draws,t.bot2));           
+        if (output) System.out.println(String.format("%3d %3d %3d | %s ", t.wins, t.losses, t.draws,t.bot2));           
             totalWin += t.wins;
             totalLose += t.losses;
             totalDraw += t.draws;    
@@ -71,7 +71,7 @@ public class Simulator {
       double lose = ((double)totalLose)/ammount*100;
       double draw = ((double)totalDraw)/ammount*100;
       
-            System.out.println("----------------------------------------------------");  
+        if (output) {    System.out.println("----------------------------------------------------");  
       System.out.println(String.format("%3d %3d %3d | %s", totalWin, totalLose, totalDraw,"TOTAL"));           
         System.out.println(String.format("%3.0f %3.0f %3.0f | %s", win, lose, draw,"TOTAL (percentage)"));           
         
@@ -80,7 +80,7 @@ public class Simulator {
       long elapsedTime = stopTime - startTime;
       System.out.println();
       System.out.println("EXECUTION TIME: "+ elapsedTime);
-      
+        }
       return win;
       
         } catch (Exception e) {
@@ -99,14 +99,23 @@ public class Simulator {
         bots.add(base+"BullyBot.jar");
         bots.add(base+"DualBot.jar");
         bots.add(base+"ProspectorBot.jar");
-        bots.add(base+"RandomBot.jar");
+        //bots.add(base+"RandomBot.jar");
         bots.add(base+"RageBot.jar");        
         bots.add(base+"396.jar");
         
         base = "example_bots\\PlanetWarrior.jar ";
         
-        return simulate(base+sufix+"\" ", bots); //Space very important!        
+        return simulate(base+sufix+"\" ", bots,true); //Space very important!        
+    }    
+    
+       public static double simulateVsRandom(String sufix) {
+        String base = "example_bots\\";
+        ArrayList<String> bots = new ArrayList<>();              
+        bots.add(base+"RandomBot.jar");
+        base = "example_bots\\PlanetWarrior.jar ";        
+        return simulate(base+sufix+"\" ", bots,false); //Space very important!        
     }
+    
     
     public static double simulateFromSuffix(String sufix, ArrayList<String> bots) {
         String base = "example_bots\\PlanetWarrior.jar ";
@@ -115,7 +124,7 @@ public class Simulator {
             bots.set(i, base+ bots.get(i)+" ");                  
         }
         
-        return simulate(base+sufix+"\" ", bots); //Space very important!                     
+        return simulate(base+sufix+"\" ", bots,true); //Space very important!                     
     }
     
     
@@ -148,7 +157,7 @@ public class Simulator {
         sufix = gen.generate().toString();     
         //sufix = " *_2_-_1_-_-_4_-_1_0_0";   
         //sufix ="+_+_*_-_-_0_3_-_4_1_%_1_0_*_*_2_1_1_1";
-        sufix = "-_17_min_9_+_1_9";
+        sufix = "*_max_5_10_*_*_10_3_11";
         //win = simulate(base+sufix+"\" "); //Space very important!
         win = simulateFromSuffix(sufix);
         //}

@@ -11,6 +11,7 @@ import java.io.UnsupportedEncodingException;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import ui.MainForm;
 
 public class GeneticWarrior {
     // The DoTurn function is where your code goes. The PlanetWars object
@@ -34,7 +35,6 @@ public class GeneticWarrior {
         return 0;
     }
 
-    
     //0 - total, 1 - player planets, 2 - enemy planets
     public static Double averageDistance(PlanetWars pw, int player) {
 
@@ -118,13 +118,13 @@ public class GeneticWarrior {
 
         //The average distance between all planets
         tree.map.parameters[16] = averageDistance(pw, 0);
-        
+
         //The average distance between my planets
         tree.map.parameters[17] = averageDistance(pw, 1);
-        
+
         //The average distance between enemy planets
         tree.map.parameters[18] = averageDistance(pw, 2);
-        
+
         //Number of my total ships
         tree.map.parameters[8] = (double) pw.NumShips(1);
         //Number of enemy total ships
@@ -177,12 +177,12 @@ public class GeneticWarrior {
                 tree.map.parameters[6] = 0.0;
                 //Size of enemy fleets incoming to the planet we attack
                 tree.map.parameters[7] = 0.0;
-                
+
                 //Size of our fleets incoming to our planet
-                tree.map.parameters[19] = 0.0;                
+                tree.map.parameters[19] = 0.0;
                 //Size of our fleets incoming to the planet we attack
                 tree.map.parameters[20] = 0.0;
-                
+
 
                 for (Fleet f : pw.EnemyFleets()) {
                     if (f.DestinationPlanet() == myP.PlanetID()) {
@@ -192,13 +192,13 @@ public class GeneticWarrior {
                         tree.map.parameters[7] += f.NumShips();
                     }
                 }
-                
-                 for (Fleet f : pw.MyFleets()) {
+
+                for (Fleet f : pw.MyFleets()) {
                     if (f.DestinationPlanet() == myP.PlanetID()) {
                         tree.map.parameters[19] += f.NumShips();
                     }
                     if (f.DestinationPlanet() == targetP.PlanetID()) {
-                        tree.map.parameters[20] += f.NumShips();                        
+                        tree.map.parameters[20] += f.NumShips();
                     }
                 }
 
@@ -262,6 +262,36 @@ public class GeneticWarrior {
 
     public static void main(String[] args) {
 
+        if (args.length == 0) {
+            /* Set the Nimbus look and feel */
+        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
+        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
+         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
+         */
+        try {
+            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+                if ("Nimbus".equals(info.getName())) {
+                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
+                    break;
+                }
+            }
+        } catch (ClassNotFoundException ex) {
+            java.util.logging.Logger.getLogger(MainForm.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (InstantiationException ex) {
+            java.util.logging.Logger.getLogger(MainForm.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (IllegalAccessException ex) {
+            java.util.logging.Logger.getLogger(MainForm.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
+            java.util.logging.Logger.getLogger(MainForm.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        }
+        //</editor-fold>
+
+            MainForm form = new MainForm();
+            
+            form.setVisible(true);
+            
+        } else {
+
 //        try {
 //            writer = new PrintWriter(new FileOutputStream(new File("C:\\the-file-name.txt")));
 //        } catch (Exception e) {
@@ -270,52 +300,53 @@ public class GeneticWarrior {
 //        writer.println("STARTED WITH INPUT:" + args[0]);
 //        writer.close();
 
-        Generator gen = new Generator();
-        ValueMap map = new ValueMap();
-        map.actions = new String[6];
-        map.actions[0] = "*";
-        map.actions[1] = "+";
-        map.actions[2] = "-";
-        map.actions[3] = "%";
-        map.actions[4] = "max";
-        map.actions[5] = "min";
+            Generator gen = new Generator();
+            ValueMap map = new ValueMap();
+            map.actions = new String[6];
+            map.actions[0] = "*";
+            map.actions[1] = "+";
+            map.actions[2] = "-";
+            map.actions[3] = "%";
+            map.actions[4] = "max";
+            map.actions[5] = "min";
 
 
-        map.parameters = new Double[21];
-        //map.parameters[0]=1.5;
-        //map.parameters[1]=2.5;
+            map.parameters = new Double[21];
+            //map.parameters[0]=1.5;
+            //map.parameters[1]=2.5;
 
-        gen.map = map;
+            gen.map = map;
 
-        tree = gen.loadFromString(args[0]);
+            tree = gen.loadFromString(args[0]);
 
 //        tree = gen.generate();                       
 
-        String line = "";
-        String message = "";
-        int c;
-        try {
-            while ((c = System.in.read()) >= 0) {
-                switch (c) {
-                    case '\n':
-                        if (line.equals("go")) {
-                            PlanetWars pw = new PlanetWars(message);
-                            DoTurn(pw);
-                            pw.FinishTurn();
-                            message = "";
-                        } else {
-                            message += line + "\n";
-                        }
-                        line = "";
-                        break;
-                    default:
-                        line += (char) c;
-                        break;
+            String line = "";
+            String message = "";
+            int c;
+            try {
+                while ((c = System.in.read()) >= 0) {
+                    switch (c) {
+                        case '\n':
+                            if (line.equals("go")) {
+                                PlanetWars pw = new PlanetWars(message);
+                                DoTurn(pw);
+                                pw.FinishTurn();
+                                message = "";
+                            } else {
+                                message += line + "\n";
+                            }
+                            line = "";
+                            break;
+                        default:
+                            line += (char) c;
+                            break;
+                    }
                 }
-            }
 
-        } catch (Exception e) {
-            // Owned.
+            } catch (Exception e) {
+                // Owned.
+            }
         }
     }
 }

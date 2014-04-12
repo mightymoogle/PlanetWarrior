@@ -18,7 +18,7 @@ import java.util.*;
 public class GeneticMadness {
 
     //Size of the population, larger the better, the slower
-    private static int populationSize = 20;
+    private static int populationSize = 10;
     //How many iterations to make, same as above...
     private static int numberOfIterations = 2;
     //Chance to have children, if no children, returns both parents
@@ -36,19 +36,32 @@ public class GeneticMadness {
     private static boolean evaluateInSandBox = false;
     //Play vs yourself in evaluation if sandboxed
     private static boolean mirrorInSandbox = false;
+    //Check all generated vs random first
+    private static boolean healthyStartingPopulation = false;
+    //How many %% need to win to start the checking
+    private static int neededWinPercentageVsRandomToAdvance = 0;
+    //Check vs random in evaluation (allows to generate healthy without checking all the time)
+    private static boolean checkVsRandom = true;
     
     //determines the selection type
+
     private static enum selectionTypes {
 
         ROULETE_WHEEL, TOURNAMENT
     };
     //The selection type
     private static selectionTypes selectionType = selectionTypes.TOURNAMENT;
-    //private static selectionTypes selectionType = selectionTypes.ROULETE_WHEEL;       
+    //private static selectionTypes selectionType = selectionTypes.ROULETE_WHEEL;
     //Determines the size of the tournament
     private static int tournamentSize = 3;
+    /**
+     * *** ROULETE WHEEL SECION
+     * ****************************************************
+     */
     //How many top trees we copy to the next population
-    private static int numberOfElites = 1; //size - elites must be pair, or one will be lost and probably crash???
+    private static int numberOfElites = 1; //size - elites must be pair, or one will be lost and probably crash???       
+     /* *** ROULETE WHEEL SECION ****************************************************
+     */
 
     private static void startUp() {
         gen = new Generator();
@@ -72,15 +85,39 @@ public class GeneticMadness {
     //Randomly generates the starting population
     private static ArrayList<BinaryTree> generateStartingPopulation() {
 
+        log("***GENERATING STARTING POPULATION***");
         ArrayList<BinaryTree> population = new ArrayList<>();
 
-        for (int i = 0; i < populationSize; i++) {
-            population.add(gen.generate());
-        }
+        if (healthyStartingPopulation) {
 
-        if (selectionType==selectionTypes.ROULETE_WHEEL) {     
-            //evaluate the whole populatioin if it's roulete wheel
-            //evaluatePopulation(population);
+            for (int i = 0; i < populationSize; i++) {
+                double r = 0;
+                while (r < neededWinPercentageVsRandomToAdvance) {
+
+                    BinaryTree baby;
+                    baby = gen.generate();
+                    r = Simulator.simulateVsRandom(baby.toString());
+
+
+                    if (r > neededWinPercentageVsRandomToAdvance) {
+                        population.add(baby);
+                        log(((double)(i+1)/populationSize*100)+"% Done");
+                    } else {
+                        log("Dropped starting member " + baby.toString() + ", lost to Random ("
+                                + r + ", need:" + neededWinPercentageVsRandomToAdvance + ")");
+
+                    }
+
+                }
+            }
+
+        } else {
+
+            //Just generate random ones
+            for (int i = 0; i < populationSize; i++) {
+                population.add(gen.generate());
+            }
+
         }
         return population;
 
@@ -93,6 +130,18 @@ public class GeneticMadness {
     //Evaluates a single node, setting the maximum and it's evaluation parameter.
     //Also returns the evaluation
     public static double evaluate(BinaryTree t) {
+
+
+        //Check vs Random bot, if it fails vs him, no need to check vs others
+        if (checkVsRandom) {
+            Double r = Simulator.simulateVsRandom(t.toString());
+            if (r < neededWinPercentageVsRandomToAdvance) {
+                log(t.toString() + " lost vs Random, not checking further ("
+                        + r + ", need:" + neededWinPercentageVsRandomToAdvance + ")");
+                return 0.0;
+            }
+        }
+
         t.evaluation = Simulator.simulateFromSuffix(t.toString());
 
         if (globalMaximum == null) {
@@ -318,18 +367,18 @@ public class GeneticMadness {
     }
 
     public static BinaryTree tournamentSelection(ArrayList<BinaryTree> population, int size) {
-                
+
         Random randnum = new Random();
         ArrayList<BinaryTree> contestants = new ArrayList<>();
 
         log("-----STARTED TOURNAMENT SELECTION------");
-        
-        if (size<=1) {
-             int rand = randnum.nextInt(population.size());             
-             log("-----TOURNAMENTSIZE TOO SMALL, RETURNED RANDOM------");
-             return population.get(rand);
+
+        if (size <= 1) {
+            int rand = randnum.nextInt(population.size());
+            log("-----TOURNAMENTSIZE TOO SMALL, RETURNED RANDOM------");
+            return population.get(rand);
         }
-        
+
 
         for (int i = 0; i < size; i++) {
             int rand = randnum.nextInt(population.size());
@@ -339,7 +388,24 @@ public class GeneticMadness {
         BinaryTree winner = null;
 
         for (BinaryTree t : contestants) {
-            t.evaluation = evaluateSandboxed(t, contestants);
+
+            //Check with radom, 0 if failed.
+            if (checkVsRandom) {
+                Double r = Simulator.simulateVsRandom(t.toString());
+                if (r < neededWinPercentageVsRandomToAdvance) {
+                    t.evaluation = 0;
+                    log(t.toString() + "lost to Random, set to 0 ("
+                            + r+" of "+neededWinPercentageVsRandomToAdvance+")");
+                } else {
+                    t.evaluation = evaluateSandboxed(t, contestants);
+                }
+            } else {
+                //Just evaluate
+                t.evaluation = evaluateSandboxed(t, contestants);
+            }
+
+
+
             if (winner == null) {
                 winner = t;
             }
@@ -382,38 +448,39 @@ public class GeneticMadness {
     //The evolution step
     public static ArrayList<BinaryTree> evolve(ArrayList<BinaryTree> population) {
         //Start with null
-        ArrayList<BinaryTree> newPopulation=null;
-        
+        ArrayList<BinaryTree> newPopulation = null;
+
         //Different algorithm depending on the type of selection
         switch (selectionType) {
 
             case ROULETE_WHEEL:
-                    
+
                 evaluatePopulation(population);
-                
+
                 //New population from elites
                 newPopulation = cloneElites(population);
 
                 //Make children, mutation inside crossStich
                 for (int i = numberOfElites - 1; i < populationSize / 2; i++) {
                     crossStich(rouletteWheelSelection(population), rouletteWheelSelection(population), newPopulation);
-                }                
+                }
 
                 //Make the simulator grow if the percentage rises?
                 break;
-                
+
             case TOURNAMENT:
-                
+
                 newPopulation = new ArrayList<>();
-                
-                for (int i = 0; i<populationSize/2; i++) {
+
+                for (int i = 0; i < populationSize / 2; i++) {
+                    log("Tournament ["+(i+1) +"/"+(populationSize/2)+"]");
                     //Fight for survival!
                     BinaryTree father = tournamentSelection(population, tournamentSize);
-                    BinaryTree mother = tournamentSelection(population, tournamentSize);                    
+                    BinaryTree mother = tournamentSelection(population, tournamentSize);
                     //Add the children to newPopulation                    
-                    crossStich(father, mother,newPopulation);                    
-                }               
-                
+                    crossStich(father, mother, newPopulation);
+                }
+
         }
 
 
@@ -422,22 +489,25 @@ public class GeneticMadness {
 
     //Evaluates the whole population
     public static void evaluatePopulation(ArrayList<BinaryTree> population) {
+        int i=1;
+        
         for (BinaryTree t : population) {
+            log("Evaluating ["+i++ +"/"+populationSize+"]");
             if (evaluateInSandBox) {
+                //This seems to not be used...
                 evaluateSandboxed(t, population);
             } else {
                 evaluate(t);
             }
         }
     }
-    
-    
+
     public static void printPopulation(ArrayList<BinaryTree> population, String text) {
-           log("*************"+text+"*************");
-            for (BinaryTree t : population) {
-                log(t.toString());
-            }
-            log("*************"+text+"*************");
+        log("*************" + text + "*************");
+        for (BinaryTree t : population) {
+            log(t.toString());
+        }
+        log("*************" + text + "*************");
 
     }
 
@@ -450,19 +520,19 @@ public class GeneticMadness {
         ArrayList<BinaryTree> population = generateStartingPopulation();
         //Print out the starting population
         printPopulation(population, "STARTING POPULATION");
-                
+
         //Evolve for the number of iterations
         for (int i = 0; i < numberOfIterations; i++) {
             population = evolve(population);
             //print the text, +2 so that first iteration is the first
-            printPopulation(population, "POPULATION NR."+(i+1));
+            printPopulation(population, "POPULATION NR." + (i + 1));
         }
 
         //Output the global maximum if we can
-        if (globalMaximum!=null) {
+        if (globalMaximum != null) {
             log("GLOBAL MAXIMUM: WINRATE=" + globalMaximum.evaluation + " CODE:" + globalMaximum.toString());
         }
-        
+
 
     }
 }
