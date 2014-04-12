@@ -18,7 +18,7 @@ public class Simulator {
     public static double simulate(String subject, ArrayList<String> bots,boolean output) {
          long startTime = System.currentTimeMillis();
         
-        String path = "h:\\Source\\JAVA\\PlanetWarrior\\src\\";
+        String path = "h:\\Source\\JAVA\\PlanetWarrior\\src\\";         
         String botPath ="example_bots\\" ;
                 
         //String subject = "example_bots\\PlanetWarrior.jar *_+_0_+_0_1_0\" ";

@@ -23,10 +23,10 @@ public class Tournament extends Thread {
     public volatile int losses = 0;
     public volatile int draws = 0;    
         
-    public static int MAP_START = 22; //Starting map
-    public static int MAP_END = 24; //Last map
+    public static int MAP_START = 1; //Starting map
+    public static int MAP_END = 3; //Last map
     public static int MAP_JUMPER = 1; //Allows to use only each Nth map
-    public static boolean RANDOM_MAPS = false; //WORKS???
+    public static boolean RANDOM_MAPS = true;
     
     
     
