@@ -91,6 +91,7 @@ public class Generator {
 
     public int getKeyId(String k) {
         for (int i = 0; i < map.actions.length; i++) {
+                                   
             if (map.actions[i].equals(k)) {
                 return i;
             }

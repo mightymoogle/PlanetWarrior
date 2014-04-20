@@ -24,9 +24,9 @@ public class Tournament extends Thread {
     public volatile int draws = 0;    
         
     public static int MAP_START = 1; //Starting map
-    public static int MAP_END = 3; //Last map
+    public static int MAP_END = 10; //Last map
     public static int MAP_JUMPER = 1; //Allows to use only each Nth map
-    public static boolean RANDOM_MAPS = true;
+    public static boolean RANDOM_MAPS = false;
     
     
     
@@ -51,7 +51,7 @@ public class Tournament extends Thread {
                 }
                 
                 
-                String fuckingIdiots = "java -jar " + path + "tools\\PlayGame.jar "
+                String botLine = "java -jar " + path + "tools\\PlayGame.jar "
                         + path + "maps\\map" + i + ".txt"
                         + " 1000 1000 log.txt "
                         + "\"java -jar " + path + bot1
@@ -61,10 +61,10 @@ public class Tournament extends Thread {
                 if (RANDOM_MAPS) {
                     i = temp;
                 }
-                
-
+               
+                              
                 //System.out.println(fuckingIdiots);
-                Process process = Runtime.getRuntime().exec(fuckingIdiots);
+                Process process = Runtime.getRuntime().exec(botLine);
 
                 InputStream is = process.getErrorStream();
                 InputStreamReader isr = new InputStreamReader(is);

@@ -1,0 +1,2 @@
+set "PATH=%PATH%;C:\Program Files (x86)\Java\jdk1.7.0_25\bin"
+java -jar tools/PlayGame.jar maps/map7.txt 1000 10000 log.txt "java -jar example_bots/RandomBot.jar" "java -jar example_bots/RandomBot.jar" | java -jar tools/ShowGame.jar

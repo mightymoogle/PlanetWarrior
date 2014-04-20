@@ -105,19 +105,23 @@ public class GeneticWarrior {
     }
 
     public static void DoTurn(PlanetWars pw) {
-
+        
         Planet source = null;
         Planet dest = null;
         Double curEval = -99990.0;
         Double evaluation = 0.0;
 
-        //if (pw.NumFleets()>5) return;
+        for (int i=0; i<tree.map.parameters.length; i++) {
+            tree.map.parameters[i]=0.0;
+        }
+        
+        //if (pw.NumFleets()>=pw.MyPlanets().size()*2) return;
 
         //Total number of planets
         tree.map.parameters[5] = (double) pw.NumPlanets();
 
         //The average distance between all planets
-        tree.map.parameters[16] = averageDistance(pw, 0);
+        tree.map.parameters[16] = averageDistance(pw, 0);        
 
         //The average distance between my planets
         tree.map.parameters[17] = averageDistance(pw, 1);
@@ -184,7 +188,7 @@ public class GeneticWarrior {
                 tree.map.parameters[20] = 0.0;
 
 
-                for (Fleet f : pw.EnemyFleets()) {
+               for (Fleet f : pw.EnemyFleets()) {
                     if (f.DestinationPlanet() == myP.PlanetID()) {
                         tree.map.parameters[6] += f.NumShips();
                     }
@@ -240,9 +244,10 @@ public class GeneticWarrior {
 
 
         if (source != null && dest != null) {
-            int numShips = source.NumShips() / 2;
-            pw.IssueOrder(source, dest, numShips);
+            int numShips = source.NumShips()/2;            
+            pw.IssueOrder(source, dest, numShips);            
         }
+    
 
     }
 

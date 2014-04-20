@@ -9,6 +9,11 @@ import SimulatorTrees.Generator;
 import SimulatorTrees.Node;
 import SimulatorTrees.Terminal;
 import SimulatorTrees.ValueMap;
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.InputStreamReader;
 import java.util.*;
 
 /**
@@ -20,7 +25,7 @@ public class GeneticMadness {
     //Size of the population, larger the better, the slower
     private static int populationSize = 10;
     //How many iterations to make, same as above...
-    private static int numberOfIterations = 2;
+    private static int numberOfIterations = 1;
     //Chance to have children, if no children, returns both parents
     private static double crossPropability = 1;
     //Chance that a mutation will happen
@@ -41,7 +46,7 @@ public class GeneticMadness {
     //How many %% need to win to start the checking
     private static int neededWinPercentageVsRandomToAdvance = 0;
     //Check vs random in evaluation (allows to generate healthy without checking all the time)
-    private static boolean checkVsRandom = true;
+    private static boolean checkVsRandom = false;
     
     //determines the selection type
 
@@ -50,8 +55,8 @@ public class GeneticMadness {
         ROULETE_WHEEL, TOURNAMENT
     };
     //The selection type
-    private static selectionTypes selectionType = selectionTypes.TOURNAMENT;
-    //private static selectionTypes selectionType = selectionTypes.ROULETE_WHEEL;
+    //private static selectionTypes selectionType = selectionTypes.TOURNAMENT;
+    private static selectionTypes selectionType = selectionTypes.ROULETE_WHEEL;
     //Determines the size of the tournament
     private static int tournamentSize = 3;
     /**
@@ -124,9 +129,45 @@ public class GeneticMadness {
     }
 
     //Load precalculated starting elements, generate missing ones
-//    private static ArrayList<BinaryTree> generateStartingPopulation(String[] precalculated) {
-//        //NOT IMPELMENTED
-//    }
+    //File must be ANSI or UTF-8 without BOM!!!!
+    private static ArrayList<BinaryTree> generateStartingPopulation(String filename) {
+
+        log("***LOADING STARTING POPULATION FROM FILE:"+filename+"***");
+        ArrayList<BinaryTree> population = new ArrayList<>();
+        int i=0;
+        try {
+        
+        
+        BufferedReader br = new BufferedReader(new FileReader(filename));
+        
+//        BufferedReader br = new BufferedReader(
+//		   new InputStreamReader(
+//                      new FileInputStream(filename), "UTF8"));
+        
+        
+        String line;        
+        while ((line = br.readLine()) != null) {           
+           BinaryTree t = gen.loadFromString(line);                     
+           population.add(t);           
+           i++;
+        }        
+                
+        br.close(); 
+        
+        if (i<populationSize) {            
+            log("Filling " +(populationSize-i)+ " missing individuals with new ones");
+              for (int j = i; j < populationSize; j++) {                
+                  population.add(gen.generate());                  
+            }            
+        }
+        
+        }   
+        catch (Exception e) {
+        log("***FAILED TO LOAD FROM FILE***");
+        }
+                
+        return population; 
+    }
     //Evaluates a single node, setting the maximum and it's evaluation parameter.
     //Also returns the evaluation
     public static double evaluate(BinaryTree t) {
@@ -504,7 +545,7 @@ public class GeneticMadness {
 
     public static void printPopulation(ArrayList<BinaryTree> population, String text) {
         log("*************" + text + "*************");
-        for (BinaryTree t : population) {
+        for (BinaryTree t : population) {            
             log(t.toString());
         }
         log("*************" + text + "*************");
@@ -517,7 +558,9 @@ public class GeneticMadness {
         startUp();
 
         //Generate the starting popuation, will need something else if need to resume
-        ArrayList<BinaryTree> population = generateStartingPopulation();
+        //ArrayList<BinaryTree> population = generateStartingPopulation();
+        ArrayList<BinaryTree> population = generateStartingPopulation("C:\\bots.txt");
+        
         //Print out the starting population
         printPopulation(population, "STARTING POPULATION");
 
