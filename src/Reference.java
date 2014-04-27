@@ -1,5 +1,7 @@
 
 
+import org.chaosdragon.geneticwarrior.main.Planet;
+import org.chaosdragon.geneticwarrior.main.PlanetWars;
 import java.util.*;
 
 public class Reference {
