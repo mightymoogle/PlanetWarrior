@@ -295,13 +295,13 @@ public class GeneticWarrior {
             
         } else {
    
-        try {
-            writer = new PrintWriter(new FileOutputStream(new File("C:\\the-file-name.txt")));
-        } catch (Exception e) {
-        }
-
-        writer.println("STARTED WITH INPUT:" + args[0]);
-        writer.close();
+//        try {
+//            writer = new PrintWriter(new FileOutputStream(new File("C:\\the-file-name.txt")));
+//        } catch (Exception e) {
+//        }
+//
+//        writer.println("STARTED WITH INPUT:" + args[0]);
+//        writer.close();
 
             Generator gen = new Generator();
             ValueMap map = new ValueMap();
