@@ -1,18 +1,12 @@
 package org.chaosdragon.geneticwarrior.main;
 
 
-import org.chaosdragon.geneticwarrior.trees.Terminal;
+import java.io.File;
+import java.io.FileOutputStream;
 import org.chaosdragon.geneticwarrior.trees.BinaryTree;
 import org.chaosdragon.geneticwarrior.trees.Generator;
 import org.chaosdragon.geneticwarrior.trees.ValueMap;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.PrintWriter;
-import java.io.UnsupportedEncodingException;
-import java.util.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import ui.MainForm;
 
 public class GeneticWarrior {
@@ -119,6 +113,9 @@ public class GeneticWarrior {
         
         //if (pw.NumFleets()>=pw.MyPlanets().size()*2) return;
 
+        //RESERVED FOR CONSTANTS!!!
+        tree.map.parameters[21] = 0.0;
+        
         //Total number of planets
         tree.map.parameters[5] = (double) pw.NumPlanets();
 
@@ -297,14 +294,14 @@ public class GeneticWarrior {
             form.setVisible(true);
             
         } else {
+   
+        try {
+            writer = new PrintWriter(new FileOutputStream(new File("C:\\the-file-name.txt")));
+        } catch (Exception e) {
+        }
 
-//        try {
-//            writer = new PrintWriter(new FileOutputStream(new File("C:\\the-file-name.txt")));
-//        } catch (Exception e) {
-//        }
-//
-//        writer.println("STARTED WITH INPUT:" + args[0]);
-//        writer.close();
+        writer.println("STARTED WITH INPUT:" + args[0]);
+        writer.close();
 
             Generator gen = new Generator();
             ValueMap map = new ValueMap();
@@ -317,7 +314,7 @@ public class GeneticWarrior {
             map.actions[5] = "min";
 
 
-            map.parameters = new Double[21];
+            map.parameters = new Double[500]; //Just to be sure
             //map.parameters[0]=1.5;
             //map.parameters[1]=2.5;
 

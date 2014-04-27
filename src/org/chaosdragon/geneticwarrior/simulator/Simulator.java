@@ -106,10 +106,10 @@ public class Simulator {
         ArrayList<String> bots = new ArrayList<>();
         
         bots.add(base+"BullyBot.jar");
-        bots.add(base+"DualBot.jar");
-        bots.add(base+"ProspectorBot.jar");
-        bots.add(base+"RandomBot.jar");
-        bots.add(base+"RageBot.jar");        
+        //bots.add(base+"DualBot.jar");
+        //bots.add(base+"ProspectorBot.jar");
+        //bots.add(base+"RandomBot.jar");
+        //bots.add(base+"RageBot.jar");        
         bots.add(base+"396.jar");
         
         base = "example_bots\\PlanetWarrior.jar ";
@@ -145,7 +145,7 @@ public class Simulator {
         }
         
         
-        return simulate(base+sufix+"\" ", bots,true,new Tournament()); //Space very important!                     
+        return simulate(base+sufix, bots,true,new Tournament()); //Space very important!                     
     }
     
       
@@ -156,7 +156,8 @@ public class Simulator {
         String base = "example_bots\\PlanetWarrior.jar ";
                 
         Generator gen = new Generator();        
-        ValueMap map = new ValueMap();        
+        ValueMap map = new ValueMap();    
+        Simulator sim = new Simulator();
         map.actions = new String[6];
         map.actions[0] = "*";
         map.actions[1] = "+";
@@ -182,14 +183,21 @@ public class Simulator {
         //sufix ="+_+_*_-_-_0_3_-_4_1_%_1_0_*_*_2_1_1_1";               
         
         sufix = "-_%_-_max_1_12_+_18_6_+_+_min_min_9_8_*_8_4_*_2_%_10_1_7_%_0_9";
+        sufix = "%_-_1_11_*_-_1_0_4";
+        
+        
         
         BinaryTree t = gen.loadFromString(sufix);
+        
+        System.out.println("TOSTRING"+t.toString());
+        
+        //t=gen.generate();
         Logger.INSTANCE.logLine(t.toString());
         
         Simulator s = new Simulator();
-
         
-        //win = simulate(base+sufix+"\" "); //Space very important!
+        sim.simulateFromSuffix(sufix);
+        //sim.simulate(base+sufix,new Tournament()); //Space very important!
         //win = simulateFromSuffix(sufix);
         //}
        

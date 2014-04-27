@@ -14,6 +14,8 @@ public abstract class Node {
         
     protected int value; //Index of the value
     public ValueMap map;
+      
+    
     public abstract String traverse(); 
     public abstract String print();
     @Override
@@ -25,7 +27,8 @@ public abstract class Node {
         this.value = value;
     }
     
-    public int getValue() {
+    public int getValue() {        
+                
         return value;
     }
     

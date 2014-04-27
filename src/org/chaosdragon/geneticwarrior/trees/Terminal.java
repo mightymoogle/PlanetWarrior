@@ -11,7 +11,7 @@ import java.util.ArrayList;
  * @author Mighty
  */
 public class Terminal extends Node {
-    
+        
     public String traverse() {
         return String.valueOf(map.parameters[value]);
     }
@@ -27,7 +27,8 @@ public class Terminal extends Node {
     }
     
     public String print() {
-        return String.valueOf(map.parameters[value]);
+        //return String.valueOf(map.parameters[value]);
+        return toString();
     }
 
     @Override

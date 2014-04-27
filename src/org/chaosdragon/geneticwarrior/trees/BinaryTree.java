@@ -16,9 +16,8 @@ public class BinaryTree extends Node implements Comparable<BinaryTree> {
     private Node root = null;
     private Node left;
     private Node right;
-    public double evaluation;//For genetic stuff   
-      
-    
+    public double evaluation;//For genetic stuff       
+   
 
     public String traverse() {
 
@@ -56,18 +55,24 @@ public class BinaryTree extends Node implements Comparable<BinaryTree> {
         
         if (move.equals("max")) {
             return String.valueOf(Math.max(lefty, righty));
-        }
-
+        }        
+       
         return "ERROR";
 
     }
 
     public String print() {
 
+        //Seems to never be called
         if (left == null) {
-            return String.valueOf(map.parameters[value]);
+            return String.valueOf(value);
+            //return String.valueOf(map.parameters[value]);            
         }
-        return "(" + map.actions[root.value] + " " + left.print() + " " + right.print() + ")";
+        
+        //4-5 max, min
+        if (root.value==4 || root.value == 5) return map.actions[root.value]+"("+left.print()+","+right.print() + ")";
+                
+        return "(" +  "" + left.print() + map.actions[root.value]+right.print() + ")";
 
     }
 
@@ -85,6 +90,7 @@ public class BinaryTree extends Node implements Comparable<BinaryTree> {
         if (left == null) {
             return String.valueOf(root.value);
         }
+        
         return map.actions[root.value] + "_" + left.toString() + "_" + right.toString();
     }
 
@@ -134,9 +140,14 @@ public class BinaryTree extends Node implements Comparable<BinaryTree> {
 
         ValueMap maps = new ValueMap();
 
-        maps.actions = new String[2];
+        maps.actions = new String[5];
         maps.actions[0] = "*";
         maps.actions[1] = "+";
+        maps.actions[2] = "%";
+        maps.actions[3] = "-";
+        maps.actions[4] = "min";
+        maps.actions[4] = "max";       
+        
 
         maps.parameters = new Double[2];
 
@@ -157,8 +168,8 @@ public class BinaryTree extends Node implements Comparable<BinaryTree> {
 //        
         BinaryTree tree = gen.generate();
 
-        maps.parameters[0] = 4.1;
-        maps.parameters[1] = 2.4;
+        maps.parameters[0] = 1.1;
+        maps.parameters[1] = 2.1;
 
         System.out.println(tree.print());
         System.out.println(tree.traverse());

@@ -6,15 +6,9 @@ package org.chaosdragon.geneticwarrior.simulator;
 
 import org.chaosdragon.geneticwarrior.trees.BinaryTree;
 import org.chaosdragon.geneticwarrior.trees.Generator;
-import org.chaosdragon.geneticwarrior.trees.Node;
-import org.chaosdragon.geneticwarrior.trees.Terminal;
 import org.chaosdragon.geneticwarrior.trees.ValueMap;
 import java.io.BufferedReader;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
-import java.io.InputStreamReader;
-import java.lang.reflect.Field;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import org.chaosdragon.logger.ClassPrinter;
@@ -27,7 +21,7 @@ import org.chaosdragon.logger.Logger;
 public class GeneticMadness {
 
     //Size of the population, larger the better, the slower
-    public int populationSize = 10;
+    public int populationSize = 100;
     //How many iterations to make, same as above...
     public int numberOfIterations = 10;
     //Chance to have children, if no children, returns both parents
@@ -55,6 +49,8 @@ public class GeneticMadness {
     public boolean checkVsRandom = false;    
     //determines the selection type
     private ArrayList<BinaryTree> population;
+    
+    public int NUMBER_OF_PARAMETERS=22;
 
     public enum selectionTypes {
 
@@ -64,7 +60,7 @@ public class GeneticMadness {
     private static selectionTypes selectionType = selectionTypes.TOURNAMENT;
     //public selectionTypes selectionType = selectionTypes.ROULETE_WHEEL;
     //Determines the size of the tournament
-    public int tournamentSize = 1;
+    public int tournamentSize = 3;
     /**
      * *** ROULETE WHEEL SECION
      * ****************************************************
@@ -91,7 +87,7 @@ public class GeneticMadness {
         map.actions[3] = "%";
         map.actions[4] = "min";
         map.actions[5] = "max";
-        map.parameters = new Double[21];   //Mmm... The number to which we generate?
+        map.parameters = new Double[NUMBER_OF_PARAMETERS];   //Mmm... The number to which we generate?
         gen.map = map;
     }
 
@@ -651,9 +647,9 @@ public class GeneticMadness {
 
     public static void main(String[] args) {           
                 
-        //Load starting stuff 
-        GeneticMadness gm = new GeneticMadness();
-        //gm.loadPopulation("C:\\bots.txt");          
+       //Load starting stuff 
+       GeneticMadness gm = new GeneticMadness();
+       //gm.loadPopulation("C:\\bots.txt");          
        gm.run();               
                 
         

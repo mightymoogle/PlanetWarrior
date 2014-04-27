@@ -14,14 +14,31 @@ public class Generator {
 
     public ValueMap map;
     private int position; //For loading from string    
-    private Random randnum = new Random();
+    private Random randnum = new Random();    
+    
+    //RANGE for which constants can be generated
+    public int CONSTANT_RANGE = 2;
+    
+    //The number of the parameter which is reserved for CONSTANTS
+    public int CONSTANT_NUMBER = 21;
+    
 
     public BinaryTree generateNonTerminal() {        
         return new BinaryTree(randnum.nextInt(map.actions.length), map);        
     }
     
     public Terminal generateTerminal() {
-        return new Terminal(randnum.nextInt(map.parameters.length), map);
+        
+        int r = randnum.nextInt(map.parameters.length);
+        
+        //If we hit the constant position
+        //Output a constant terminal object
+        if (r==CONSTANT_NUMBER)        
+            return new ConstantTerminal(
+                    randnum.nextInt(CONSTANT_RANGE*2+1)-CONSTANT_RANGE, map);
+        
+        //Otherwise just a regular terminal
+        return new Terminal(r, map);
     }
     
     private Node makeNode(int currentDepth) {
@@ -66,7 +83,14 @@ public class Generator {
         
         //If is a terminal, return it
         if (!isAction(keys[position])) {
-                        
+            
+            
+            // C10 - constant 10, C-10 = constant -10
+            if (keys[position].charAt(0)=='C') {
+                String work = keys[position].substring(1);
+                return new ConstantTerminal(Integer.parseInt(work),map);
+            }
+            
             return new Terminal(Integer.parseInt(keys[position++]),map);            
         }
         

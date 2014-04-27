@@ -49,19 +49,25 @@ public enum Logger {
     }
     
     public void logLine(String s) {
-        if (!isOpen)  return;
-        writer.println(s);
         if (printable) {
             System.out.println(s);
         }
+        
+        
+        if (!isOpen)  return;
+        writer.println(s);
+        
     }
     
     public void log(String s) {
-        if (!isOpen)  return;
-        writer.print(s);
         if (printable) {
             System.out.print(s);
         }
+        
+        
+        if (!isOpen)  return;
+        writer.print(s);
+        
     }
     
     public void close() {

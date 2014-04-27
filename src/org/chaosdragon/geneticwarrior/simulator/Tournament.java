@@ -90,9 +90,9 @@ public class Tournament extends Thread {
                 InputStreamReader isr = new InputStreamReader(is);
                 BufferedReader br = new BufferedReader(isr);
 
-                InputStream is2 = process.getInputStream();
-                InputStreamReader isr2 = new InputStreamReader(is2);
-                BufferedReader br2 = new BufferedReader(isr2);
+//                InputStream is2 = process.getInputStream();
+//                InputStreamReader isr2 = new InputStreamReader(is2);
+//                BufferedReader br2 = new BufferedReader(isr2);
 
                 String line = "";
 
